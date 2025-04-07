@@ -1,3 +1,6 @@
+require('dotenv').config(); // This must be at the very top
+require('module-alias/register');
+
 import app from "@/app";
 import { environmentConfig } from "@/config";
 
