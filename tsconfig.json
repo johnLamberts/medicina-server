@@ -1,27 +1,32 @@
 
 {
-"compilerOptions": {
-  "outDir": "dist",
-  "sourceMap": true,
-  "target": "esnext",
-  "module": "commonjs",
-  "esModuleInterop": true,
-  "forceConsistentCasingInFileNames": true,
-  "noImplicitAny": true,
-  "strict": true,
-  "skipLibCheck": true,
-  "lib": ["dom", "esnext"],
-  "allowJs": true,
-  "rootDir": ".",
-  "removeComments": true,
-  "moduleResolution": "node",
-  "resolveJsonModule": true,
-  "baseUrl": "./",
-  "paths": {
-    "@/*": ["src/*"]
+  "compilerOptions": {
+    "outDir": "dist",
+    "sourceMap": true,
+    "target": "esnext",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "lib": ["dom", "esnext"],
+    "allowJs": true,
+    "rootDir": ".",
+    "removeComments": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
-  "experimentalDecorators": true,
-  "emitDecoratorMetadata": true
-},
-"exclude": ["node_modules", "dist", "coverage"]
-}
+    "exclude": ["node_modules", "dist", "coverage"],
+    "include": ["./src/**/*.ts", "./src/**/*.d.ts"],
+    "ts-node": {
+      "require": ["tsconfig-paths/register"]
+    }
+  }
+  
