@@ -3,6 +3,11 @@ import { IUser } from "../sb-users/user.interface";
 export default interface ISeniorCitizen extends IUser {
   id?: string; // ID assigned by Supabase
 
+
+  // healthStatus
+
+  healthStatus?: string;
+
   // Senior-specific information
   address?: string;
   birthdate?: string; // Use ISO format (YYYY-MM-DD) for dates

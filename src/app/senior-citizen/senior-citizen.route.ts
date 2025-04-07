@@ -17,17 +17,17 @@ import express from "express";
 import SeniorCitizenController from "../senior-citizen/senior-citizen.controllers";
 // import { addSeniorCitizenValidation } from "@/common/middlewares/validation/senior-citizen/senior-citizen.validation";
 // import seniorCitizensFeature from "@/common/middlewares/sort-filter-pagination/sb-senior-citizens.features";
-import usersFeature from "@/common/middlewares/sort-filter-pagination/sb-users.features";
-import { addSeniorCitizenValidation } from "@/common/middlewares/validation/senior-citizen";
+import { uploadImage } from "@/common/middlewares/file-upload";
+import seniorCitizenFeature from "@/common/middlewares/sort-filter-pagination/senior-citizen.features";
 
 const router = express.Router();
 const seniorCitizenController = new SeniorCitizenController(); // Create an instance of SeniorCitizenController
 
 // Route handlers
-router.get("/", usersFeature(), (seniorCitizenController as any).getSeniorCitizensHandler); //seniorCitizensFeature(), 
-router.post("/add_senior",  addSeniorCitizenValidation ,(seniorCitizenController as any).addSeniorCitizenHandler); //addSeniorCitizenValidation, 
-router.put("/senior/:id", (seniorCitizenController as any).updateSeniorCitizenHandler);
-router.delete("/senior/:id", (seniorCitizenController as any).deleteSeniorCitizenHandler);
+router.get("/", seniorCitizenFeature(), (seniorCitizenController as any).getSeniorCitizensHandler); //seniorCitizensFeature(), 
+router.post("/add_senior", uploadImage.single('profileImg'), (seniorCitizenController as any).addSeniorCitizenHandler); //addSeniorCitizenValidation, 
+// router.put("/senior/:id", (seniorCitizenController as any).updateSeniorCitizenHandler);
+// router.delete("/senior/:id", (seniorCitizenController as any).deleteSeniorCitizenHandler);
 
 export const SeniorCitizenRoute: express.Router = router;
 // import express from "express";

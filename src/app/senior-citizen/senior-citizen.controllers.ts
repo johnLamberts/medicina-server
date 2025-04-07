@@ -105,7 +105,7 @@
 // export default SeniorCitizenController;
 import uploadFile from "@/common/middlewares/file-upload/storage";
 import { HttpStatusCodes } from "@/constants";
-import { TPaginationResponse } from "@/interface";
+import { TPaginationRequest, TPaginationResponse } from "@/interface";
 import { customReponse } from "@/utils";
 import { NextFunction, Request, Response } from "express";
 import { SeniorCitizenService } from "./seniior-citizen.service";
@@ -117,96 +117,84 @@ interface CustomResponse extends Response {
 }
 
 class SeniorCitizenController {
-  private seniorCitizenService: typeof SeniorCitizenService;
+  private seniorCitizenService: SeniorCitizenService | any;
+
 
   constructor() {
-    this.seniorCitizenService = SeniorCitizenService;
+    this.seniorCitizenService = new SeniorCitizenService();
   }
 
-  async getSeniorCitizensHandler(req: Request, res: CustomResponse, next: NextFunction) {
+ getSeniorCitizensHandler = async (_req: TPaginationRequest, res: TPaginationResponse) => {
+       try {
+         if(res.paginatedResults) {
+           const { results, next, previous, currentPage, totalDocs, totalPages, lastPage } = res.paginatedResults;
+     
+           const responseObject: any = {
+             totalDocs: totalDocs || 0,
+             totalPages: totalPages || 0,
+             lastPage: lastPage || 0,
+             count: results?.length || 0,
+             currentPage: currentPage || 0,
+           };
+     
+           if(next) {
+             responseObject.nextPage = next;
+           }
+           if(previous) {
+             responseObject.prevPage = previous;
+           }
+     
+           responseObject.seniorCitizens = results?.map((user: ISeniorCitizen) => {
+             return {
+               ...user,
+               request: {
+                 type: 'GET',
+                 description: 'Get one user with the ID',
+                 url: `http://localhost:5370/api/v1/senior/${user.id}`
+               }
+             }
+           })
+     
+           const success = customReponse<typeof responseObject>().success(HttpStatusCodes.OK, responseObject, "Successfully found students");
+     
+           return res.status(success.statusCode).json(success)
+         } else {
+           const error = customReponse().error(404, new Error('No students found.'), "No students found")
+           return res.status(error.statusCode).json(error)
+         }
+       } catch (error) {
+         return res.status(500).send(
+           customReponse().error(404, error as Error, 'An error occurred while retrieving products')
+         )
+       }
+     } 
+
+  addSeniorCitizenHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      if (res.paginatedResults) {
-        const { results, next, previous, currentPage, totalDocs, totalPages, lastPage } = res.paginatedResults;
-
-        const responseObject: any = {
-          totalDocs: totalDocs || 0,
-          totalPages: totalPages || 0,
-          lastPage: lastPage || 0,
-          count: results?.length || 0,
-          currentPage: currentPage || 0,
-        };
-
-        if (next) {
-          responseObject.nextPage = next;
-        }
-        if (previous) {
-          responseObject.prevPage = previous;
-        }
-
-        responseObject.seniors = results?.map((user: ISeniorCitizen) => {
-          return {
-            ...user,
-            request: {
-              type: 'GET',
-              description: 'Get one user with the ID',
-              url: `http://localhost:5370/api/v1/user/senior/${user.user_id}`
-            }
-          }
-        })
-
-        const success = customReponse<typeof responseObject>().success(HttpStatusCodes.OK, responseObject, "Successfully found seniors");
-
-        return res.status(success.statusCode).json(success)
-      } else {
-        const error = customReponse().error(404, new Error('No seniors found.'), "No seniors found")
-        return res.status(error.statusCode).json(error)
-      }
-    } catch (error) {
-      return res.status(500).send(
-        customReponse().error(404, error as Error, 'An error occurred while retrieving seniors')
-      )
-    }
-  }
-
-  async addSeniorCitizenHandler(req: Request, res: Response, next: NextFunction) {
-    // try {
-    //   const newData = await this.seniorCitizenService.addSeniorCitizen(req.body);
-    //   const response = customReponse().success(HttpStatusCodes.CREATED, newData, "Senior citizen added successfully");
-    //   return res.status(response.statusCode).json(response);
-    // } catch (error) {
-    //   next(error);
-    // }
-    try {
-
       let storageRefUrl = '';
-
+  
       if(req.file?.filename) {
         const localFilePath = `${process.env.PWD}/public/uploads/sb_users/${req.file?.filename}`;
         const destination = `sb_users/${req.file.filename}`;
-
+  
         storageRefUrl = await uploadFile(localFilePath, destination);
-
       }
       
-
       const userData = {
         ...req.body,
-        userImg: storageRefUrl
+        profileImg: storageRefUrl
       }
-
-
+  
+      console.log(userData)
+  
       const data = await this.seniorCitizenService.addSeniorCitizen(userData);
-
-
+  
       const response = customReponse().success(HttpStatusCodes.OK, data, `Student has been added.`)
-
+  
       return res.status(response.statusCode).json(response);
-
     } catch (err) {
       console.log(`[AddSeniorCitizenControllerError]: ${err}`)
-      
       next(err);
-
     }
   }
 
