@@ -12,6 +12,7 @@
   "description": "Base API = /api/v1/",
   "dependencies": {
     "@supabase/supabase-js": "^2.45.5",
+    "base64-arraybuffer": "^1.0.2",
     "colors.ts": "^1.0.20",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

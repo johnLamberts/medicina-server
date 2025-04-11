@@ -39,7 +39,6 @@ export  class MedicineService {
     try {
 
 
-      console.log(payload)
       // Create Medicine 
       const { data: medicineData, error: medicineErr } = await supabase
         .from("medicine")

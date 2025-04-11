@@ -1,6 +1,5 @@
 import { uploadImage } from "@/common/middlewares/file-upload";
 import { pharmacyFeature } from "@/common/middlewares/sort-filter-pagination";
-import { addPhamarcyValidation } from "@/common/middlewares/validation/phamarcy";
 import express from "express";
 import { PharmacyController } from "./phamarcy.controller";
 
@@ -10,7 +9,8 @@ const phamarcyController = new PharmacyController;
 
 
 // router.get("/", UserController.getUsersHandler)
-router.post("/add_pharmacy", uploadImage.single('pharmacyImg'), addPhamarcyValidation, (phamarcyController as any).addPhamarcyHandler)
+router.post("/add_pharmacy", uploadImage.single('pharmacyImg'), (phamarcyController as any).addPhamarcyHandler)
+router.put("/update_pharmacy", uploadImage.single('pharmacyImg'), (phamarcyController as any).updatePhamarcyHandler)
 router.get("/", pharmacyFeature(), phamarcyController.getPharmaciesHandler as any)
 
 

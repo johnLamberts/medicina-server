@@ -1,6 +1,6 @@
 export interface IPharmacy {
   // Unique identifier for each pharmacy
-  pharmacyId?: string;
+  pharmacy_id?: string;
 
   // The name of the pharmacy
   name?: string;

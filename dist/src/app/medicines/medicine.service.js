@@ -27,7 +27,6 @@ class MedicineService {
     ;
     async updateMedicine(payload) {
         try {
-            console.log(payload);
             const { data: medicineData, error: medicineErr } = await config_1.supabase
                 .from("medicine")
                 .update(payload)

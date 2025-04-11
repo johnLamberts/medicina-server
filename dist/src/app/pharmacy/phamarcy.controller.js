@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PharmacyController = void 0;
-const file_upload_1 = require("@/common/middlewares/file-upload");
+const config_1 = require("@/config");
 const constants_1 = require("@/constants");
 const utils_1 = require("@/utils");
-const random_avatar_utils_1 = __importDefault(require("@/utils/random-avatar.utils"));
+const base64_arraybuffer_1 = require("base64-arraybuffer");
 const phamarcy_service_1 = __importDefault(require("./phamarcy.service"));
 class PharmacyController {
     phamarcyService;
@@ -16,16 +16,27 @@ class PharmacyController {
     }
     addPhamarcyHandler = async (req, res, next) => {
         try {
+            console.log(req.body.pharmacyImg);
             let storageRefUrl = '';
-            if (req.file?.filename) {
-                const localFilePath = `${process.env.PWD}/public/uploads/pharmacy/${req.file?.filename}`;
-                const destination = `phamarcy/${req.file.filename}`;
-                storageRefUrl = await (0, file_upload_1.uploadFile)(localFilePath, destination);
-                (0, utils_1.deleteFile)(localFilePath);
+            if (req.body.pharmacyImg && req.body.pharmacyImg.startsWith('data:image/')) {
+                const base64Image = req.body.pharmacyImg;
+                const base64Data = base64Image.includes('base64,')
+                    ? base64Image.split('base64,')[1]
+                    : base64Image;
+                const { data: imageData, error: uploadError } = await config_1.supabase.storage
+                    .from('booklet-senior')
+                    .upload(`phamarcy/${Date.now()}-cover.png`, (0, base64_arraybuffer_1.decode)(base64Data), {
+                    contentType: 'image/png'
+                });
+                if (uploadError) {
+                    throw new Error(`Error uploading image: ${uploadError.message}`);
+                }
+                const { data: urlData } = await config_1.supabase.storage
+                    .from('booklet-senior')
+                    .getPublicUrl(imageData.path);
+                storageRefUrl = urlData.publicUrl;
             }
-            else {
-                storageRefUrl = (0, random_avatar_utils_1.default)();
-            }
+            console.log(storageRefUrl);
             const userData = {
                 ...req.body,
                 pharmacyImg: storageRefUrl
@@ -62,7 +73,7 @@ class PharmacyController {
                         request: {
                             type: 'GET',
                             description: 'Get one phamarcy with the ID',
-                            url: `http://localhost:8080/api/v1/phamarcy/${user.pharmacyId}`
+                            url: `http://localhost:8080/api/v1/phamarcy/${user.pharmacy_id}`
                         }
                     };
                 });
@@ -76,6 +87,41 @@ class PharmacyController {
         }
         catch (error) {
             return res.status(500).send((0, utils_1.customReponse)().error(404, error, 'An error occurred while retrieving products'));
+        }
+    };
+    updatePhamarcyHandler = async (req, res, next) => {
+        try {
+            console.log(req.body);
+            let pharmacyImg = req.body.pharmacyImg;
+            if (req.body.pharmacyImg && req.body.pharmacyImg.startsWith('data:image/')) {
+                const base64Image = req.body.pharmacyImg;
+                const base64Data = base64Image.includes('base64,')
+                    ? base64Image.split('base64,')[1]
+                    : base64Image;
+                const { data: imageData, error: uploadError } = await config_1.supabase.storage
+                    .from('booklet-senior')
+                    .upload(`pharmacy/${Date.now()}-cover.png`, (0, base64_arraybuffer_1.decode)(base64Data), {
+                    contentType: 'image/png'
+                });
+                if (uploadError) {
+                    throw new Error(`Error uploading image: ${uploadError.message}`);
+                }
+                const { data: urlData } = await config_1.supabase.storage
+                    .from('booklet-senior')
+                    .getPublicUrl(imageData.path);
+                pharmacyImg = urlData.publicUrl;
+            }
+            const medicine = {
+                ...req.body,
+                pharmacyImg,
+            };
+            const updatedMedicine = await this.phamarcyService.updatePharmacy(medicine);
+            const response = (0, utils_1.customReponse)().success(constants_1.HttpStatusCodes.OK, updatedMedicine.data, 'Pharmacy has been updated successfully.');
+            return res.status(response.statusCode).json(response);
+        }
+        catch (err) {
+            console.error(`[UpdatePhamarcyControllerError]: ${err}`);
+            next(err);
         }
     };
 }
