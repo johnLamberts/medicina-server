@@ -17,7 +17,36 @@ export  class MedicineService {
         .select()
         .single();
 
-        console.log(medicineErr)
+
+      if(medicineErr) return customReponse<IMedicine>().error(400, this.convertToError(medicineErr), 'Medicine error', 'MedicineError')
+
+      if (!medicineData) return customReponse<IMedicine>().error(500, new Error('Medicine data insertion failed'), 'Database error', 'DatabaseError')
+
+
+      return customReponse<IMedicine>().success(201, medicineData, 'Medicine created successfully')
+
+    } catch(error) {
+      
+      console.error('Unexpected error in createUser:', error)
+      return customReponse<IMedicine>().error(500, 
+        error instanceof Error ? error : 
+        new Error('Unknown error'), 
+        'An unexpected error occurred', 'UnexpectedError');
+    }
+  };
+
+  async updateMedicine(payload: IMedicine): Promise<SuccessResponse<IMedicine> | ErrorResponse> {
+    try {
+
+
+      console.log(payload)
+      // Create Medicine 
+      const { data: medicineData, error: medicineErr } = await supabase
+        .from("medicine")
+        .update(payload)
+        .eq("medicineId", payload.medicineId)
+        .select()
+        .single();
 
 
       if(medicineErr) return customReponse<IMedicine>().error(400, this.convertToError(medicineErr), 'Medicine error', 'MedicineError')

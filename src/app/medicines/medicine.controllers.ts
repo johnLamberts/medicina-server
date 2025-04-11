@@ -99,4 +99,41 @@ export default class MedicineController {
   } 
 
 
+  updateMedicineHandler = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const medicineData: IMedicine = req.body;
+  
+    
+      // Handle file upload if present
+      let medicineImageUrl = medicineData.medicineImageUrl;
+      if (req.file?.filename) {
+        const localFilePath = `${process.env.PWD}/public/uploads/others/${req.file.filename}`;
+        const destination = `medicines/${req.file.filename}`;
+        medicineImageUrl = await uploadFile(localFilePath, destination);
+        deleteFile(localFilePath);
+      }
+  
+      // Prepare medicine data
+      const medicine: IMedicine = {
+        ...medicineData,
+        medicineImageUrl,
+      };
+  
+      // Update medicine
+      const updatedMedicine = await this.medicineService.updateMedicine(medicine);
+  
+      const response = customReponse().success(
+        HttpStatusCodes.OK,
+        updatedMedicine.data,
+        'Medicine has been updated successfully.'
+      );
+  
+      return res.status(response.statusCode).json(response);
+    } catch (err) {
+      console.error(`[UpdateMedicineControllerError]: ${err}`);
+      next(err);
+    }
+  }
+
+
 }
