@@ -34,6 +34,72 @@ class UserController {
             next(err);
         }
     };
+    updateUserHandler = async (req, res, next) => {
+        try {
+            console.log(req.body);
+            let storageRefUrl = '';
+            if (req.file?.filename) {
+                const localFilePath = `${process.env.PWD}/public/uploads/sb_users/${req.file?.filename}`;
+                const destination = `sb_users/${req.file.filename}`;
+                storageRefUrl = await (0, storage_1.default)(localFilePath, destination);
+            }
+            const userData = {
+                ...req.body,
+                userImg: storageRefUrl
+            };
+            const data = await this.userService.updateUser(userData);
+            const response = (0, utils_1.customReponse)().success(constants_1.HttpStatusCodes.OK, data, `Students has been added.`);
+            return res.status(response.statusCode).json(response);
+        }
+        catch (err) {
+            console.log(`[UpdateStudentControllerError]: ${err}`);
+            next(err);
+        }
+    };
+    updateUserArchiveHandler = async (req, res, next) => {
+        try {
+            console.log(req.body);
+            let storageRefUrl = '';
+            if (req.file?.filename) {
+                const localFilePath = `${process.env.PWD}/public/uploads/sb_users/${req.file?.filename}`;
+                const destination = `sb_users/${req.file.filename}`;
+                storageRefUrl = await (0, storage_1.default)(localFilePath, destination);
+            }
+            const userData = {
+                ...req.body,
+                userImg: storageRefUrl
+            };
+            const data = await this.userService.archiveUser(userData);
+            const response = (0, utils_1.customReponse)().success(constants_1.HttpStatusCodes.OK, data, `Students has been added.`);
+            return res.status(response.statusCode).json(response);
+        }
+        catch (err) {
+            console.log(`[UpdateStudentControllerError]: ${err}`);
+            next(err);
+        }
+    };
+    updateUserUnarchiveHandler = async (req, res, next) => {
+        try {
+            console.log(req.body);
+            let storageRefUrl = '';
+            if (req.file?.filename) {
+                const localFilePath = `${process.env.PWD}/public/uploads/sb_users/${req.file?.filename}`;
+                const destination = `sb_users/${req.file.filename}`;
+                storageRefUrl = await (0, storage_1.default)(localFilePath, destination);
+            }
+            const userData = {
+                ...req.body,
+                userImg: storageRefUrl
+            };
+            const data = await this.userService.unarchiveUser(userData);
+            const response = (0, utils_1.customReponse)().success(constants_1.HttpStatusCodes.OK, data, `Students has been added.`);
+            return res.status(response.statusCode).json(response);
+        }
+        catch (err) {
+            console.log(`[UpdateStudentControllerError]: ${err}`);
+            next(err);
+        }
+    };
     getOneUserHandler = async (req, res, next) => {
         try {
             const id = req.params.id;
