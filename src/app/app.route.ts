@@ -1,4 +1,5 @@
 import { Application } from "express"
+import { FingerprintRoute } from "./fingerprint/fingerprint.route"
 import { MedicineRoute } from "./medicines/medicine.route"
 import { PharmacyRoute } from "./pharmacy/phamarcy.route"
 import { SbUserRoute } from "./sb-users"
@@ -18,4 +19,5 @@ export const router = async (app: Application) => {
   app.use(`${API_VERSIONING_ENDPOINTS}/medicine`, MedicineRoute)
   app.use(`${API_VERSIONING_ENDPOINTS}/senior`, SeniorCitizenRoute);
   app.use(`${API_VERSIONING_ENDPOINTS}/transaction`, TransactionRoute);
+  app.use(`${API_VERSIONING_ENDPOINTS}/fingerprints`, FingerprintRoute);
 }

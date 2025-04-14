@@ -286,17 +286,18 @@ export class SeniorCitizenService {
         .insert({
           ...payload,
         })
-        .single();
+        .select();
         
         if(seniorError) throw  `[SeniorErrorService]: ${JSON.stringify(seniorError, null, 2)}`;
 
-  
+        console.log(seniorData)
         const { data: seniorUserData, error: seniorUserError } = await supabase.auth.admin.createUser({
           email_confirm: true,
           email: payload.email,
           password: payload.password,
           user_metadata: {
-            ...payload
+            ...(seniorData as any)[0],
+            userRole: "senior_citizen"
           }
         })
   

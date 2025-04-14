@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
+const fingerprint_route_1 = require("./fingerprint/fingerprint.route");
 const medicine_route_1 = require("./medicines/medicine.route");
 const phamarcy_route_1 = require("./pharmacy/phamarcy.route");
 const sb_users_1 = require("./sb-users");
@@ -13,6 +14,7 @@ const router = async (app) => {
     app.use(`${API_VERSIONING_ENDPOINTS}/medicine`, medicine_route_1.MedicineRoute);
     app.use(`${API_VERSIONING_ENDPOINTS}/senior`, senior_citizen_route_1.SeniorCitizenRoute);
     app.use(`${API_VERSIONING_ENDPOINTS}/transaction`, transactions_1.TransactionRoute);
+    app.use(`${API_VERSIONING_ENDPOINTS}/fingerprints`, fingerprint_route_1.FingerprintRoute);
 };
 exports.router = router;
 //# sourceMappingURL=app.route.js.map
