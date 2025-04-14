@@ -14,5 +14,4 @@ router.get('/has-registered/:seniorId', (fingerprintController as any).hasRegist
 // Get active fingerprint templates
 router.get('/templates/:seniorId', (fingerprintController as any).getActiveTemplatesHandler);
 
-
 export const FingerprintRoute: express.Router = router;

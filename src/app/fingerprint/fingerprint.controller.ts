@@ -13,17 +13,17 @@ export class FingerprintController {
   // Register a new fingerprint
   registerFingerprintHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { seniorId, templateData, fingerPosition, qualityScore } = req.body as any;
+      const { senior_id, templateData, fingerPosition, qualityScore } = req.body as any;
 console.log(req.body)
       // Validation
-      if (!seniorId || !templateData) {
+      if (!senior_id || !templateData) {
         const error = new Error('seniorId and templateData are required');
         const response = customReponse().error(HttpStatusCodes.BAD_REQUEST, error, `Error has been added.`)
         res.status(response.statusCode).json(response)
       }
 
       const success = await this.fingerprintService.registerFingerprint(
-        seniorId,
+        senior_id,
         templateData,
         fingerPosition || 'right_thumb',
         qualityScore || 80
@@ -32,7 +32,7 @@ console.log(req.body)
       if (success) {
         const response = customReponse().success(
           HttpStatusCodes.CREATED,
-          { seniorId },
+          { senior_id },
           'Fingerprint registered successfully'
         );
         return res.status(response.statusCode).json(response);
