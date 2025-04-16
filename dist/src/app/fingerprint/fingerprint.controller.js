@@ -11,16 +11,16 @@ class FingerprintController {
     }
     registerFingerprintHandler = async (req, res, next) => {
         try {
-            const { seniorId, templateData, fingerPosition, qualityScore } = req.body;
+            const { senior_id, template_data, fingerPosition, qualityScore } = req.body;
             console.log(req.body);
-            if (!seniorId || !templateData) {
-                const error = new Error('seniorId and templateData are required');
+            if (!senior_id || !template_data) {
+                const error = new Error('seniorId and template_data are required');
                 const response = (0, utils_1.customReponse)().error(constants_1.HttpStatusCodes.BAD_REQUEST, error, `Error has been added.`);
                 res.status(response.statusCode).json(response);
             }
-            const success = await this.fingerprintService.registerFingerprint(seniorId, templateData, fingerPosition || 'right_thumb', qualityScore || 80);
+            const success = await this.fingerprintService.registerFingerprint(senior_id, template_data, fingerPosition || 'right_thumb', qualityScore || 80);
             if (success) {
-                const response = (0, utils_1.customReponse)().success(constants_1.HttpStatusCodes.CREATED, { seniorId }, 'Fingerprint registered successfully');
+                const response = (0, utils_1.customReponse)().success(constants_1.HttpStatusCodes.CREATED, { senior_id }, 'Fingerprint registered successfully');
                 return res.status(response.statusCode).json(response);
             }
             else {
@@ -64,6 +64,32 @@ class FingerprintController {
         catch (err) {
             console.error(`[GetActiveTemplatesControllerError]: ${err}`);
             next(err);
+        }
+    };
+    handleFingerprintVerification = async (req, res, next) => {
+        try {
+            const { senior_id, template_data } = req.body;
+            if (!senior_id || !template_data) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Missing required fields: senior_id and template_data are required'
+                });
+            }
+            const result = await this.fingerprintService.verifyFingerprint(senior_id, template_data);
+            return res.status(200).json({
+                success: true,
+                data: result,
+                message: result.matched
+                    ? 'Fingerprint verification successful'
+                    : 'No matching fingerprint found'
+            });
+        }
+        catch (error) {
+            console.error('Fingerprint verification API error:', error);
+            return res.status(500).json({
+                success: false,
+                error: error instanceof Error ? error.message : 'Server error during fingerprint verification'
+            });
         }
     };
     deleteFingerprintHandler = async (req, res, next) => {

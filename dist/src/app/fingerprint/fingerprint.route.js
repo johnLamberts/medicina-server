@@ -9,6 +9,7 @@ const fingerprint_controller_1 = require("./fingerprint.controller");
 const router = express_1.default.Router();
 const fingerprintController = new fingerprint_controller_1.FingerprintController();
 router.post('/register', fingerprintController.registerFingerprintHandler);
+router.post('/verify', fingerprintController.registerFingerprintHandler);
 router.get('/has-registered/:seniorId', fingerprintController.hasRegisteredFingerprintHandler);
 router.get('/templates/:seniorId', fingerprintController.getActiveTemplatesHandler);
 exports.FingerprintRoute = router;

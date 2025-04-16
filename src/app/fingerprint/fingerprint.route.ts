@@ -8,6 +8,9 @@ const fingerprintController = new FingerprintController();
 // Register a new fingerprint
 router.post('/register', (fingerprintController as any).registerFingerprintHandler);
 
+// Verify the fingerprint
+router.post('/verify', (fingerprintController as any).handleFingerprintVerification);
+
 // Check if a senior has a registered fingerprint
 router.get('/has-registered/:seniorId', (fingerprintController as any).hasRegisteredFingerprintHandler);
 

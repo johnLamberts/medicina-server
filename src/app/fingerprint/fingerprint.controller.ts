@@ -13,18 +13,18 @@ export class FingerprintController {
   // Register a new fingerprint
   registerFingerprintHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { senior_id, templateData, fingerPosition, qualityScore } = req.body as any;
+      const { senior_id, template_data, fingerPosition, qualityScore } = req.body as any;
 console.log(req.body)
       // Validation
-      if (!senior_id || !templateData) {
-        const error = new Error('seniorId and templateData are required');
+      if (!senior_id || !template_data) {
+        const error = new Error('seniorId and template_data are required');
         const response = customReponse().error(HttpStatusCodes.BAD_REQUEST, error, `Error has been added.`)
         res.status(response.statusCode).json(response)
       }
 
       const success = await this.fingerprintService.registerFingerprint(
         senior_id,
-        templateData,
+        template_data,
         fingerPosition || 'right_thumb',
         qualityScore || 80
       );
@@ -101,6 +101,37 @@ console.log(req.body)
       next(err);
     }
   };
+
+  // Verify
+  handleFingerprintVerification = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { senior_id, template_data } = req.body;
+      
+      if (!senior_id || !template_data) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing required fields: senior_id and template_data are required'
+        });
+      }
+      
+      const result = await this.fingerprintService.verifyFingerprint(senior_id, template_data);
+      
+      return res.status(200).json({
+        success: true,
+        data: result,
+        message: result.matched 
+          ? 'Fingerprint verification successful' 
+          : 'No matching fingerprint found'
+      });
+    } catch (error) {
+      console.error('Fingerprint verification API error:', error);
+      return res.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : 'Server error during fingerprint verification'
+      });
+    }
+  }
+
 
   // Delete a fingerprint (for handleDeleteFingerprint in ProfilePage)
   deleteFingerprintHandler = async (req: Request, res: Response, next: NextFunction) => {
