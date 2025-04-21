@@ -276,6 +276,8 @@ const addSeniorCitizen = async (payload: Partial<ISeniorCitizen>) => {
 export class SeniorCitizenService {
   constructor() { }
 
+
+  
   
 
   async addSeniorCitizen  (payload: Partial<ISeniorCitizen>){
